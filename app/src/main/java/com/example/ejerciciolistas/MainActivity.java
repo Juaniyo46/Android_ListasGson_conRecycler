@@ -26,15 +26,15 @@ public class MainActivity extends AppCompatActivity {
     RVAdapter adapter;
     Sitios sitiosList;
     List<Sitio> listado;
-
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final SharedPreferences prefs =
-                getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
+
+        prefs = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
 
         //Esto comprueba si hay datos en el SharedPreferences para cargalos y si no lo hay lo carga vaccio.
         String name = prefs.getString("names","Name");
@@ -99,6 +99,14 @@ public class MainActivity extends AppCompatActivity {
             String sitio = data.getStringExtra("sitio");
             Toast.makeText(this, sitio, Toast.LENGTH_SHORT).show();
             listado.add(new Sitio(sitio));
+            sitiosList = new Sitios((ArrayList<Sitio>) listado);
+
+            //Esto actualiza el json cada vez que se inserta uno
+            String innerJson = sitiosList.toJSON();
+            Log.i("gsonSitios",innerJson);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("names",innerJson);
+            editor.apply();
 
             // json = sitiosLIst.toJson--> editor de shareperefen  name --> json
             adapter.notifyDataSetChanged();
